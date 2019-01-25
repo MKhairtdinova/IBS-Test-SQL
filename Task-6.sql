@@ -27,16 +27,18 @@ INSERT INTO DIC_DESTINATION VALUES (10, 8, 'Бобруйск');
 DECLARE 
     -- все корни дерева 
     CURSOR start_destinations IS 
-        SELECT dic_id             
+        SELECT dic_id            
         FROM  DIC_DESTINATION 
-        WHERE parent_id IS NULL;
+        WHERE parent_id IS NULL
+        ORDER BY s_name;
     
     -- все потомки start_destination (включая корень)
     CURSOR child_destinations (start_destination_id DIC_DESTINATION.dic_id%TYPE) IS
         SELECT LPAD(s_name, LENGTH(s_name) + LEVEL*2-2, '_') AS "DESTINATION"
         FROM DIC_DESTINATION
         START WITH dic_id = start_destination_id
-        CONNECT BY PRIOR dic_id = parent_id;
+        CONNECT BY PRIOR dic_id = parent_id
+        ORDER SIBLINGS BY s_name;
 BEGIN
     FOR dest IN start_destinations
     LOOP
